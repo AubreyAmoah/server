@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  hash  String
+
+  firstName String?
+  lastName  String?
+
+  approvals Application[]
+
+  @@map("users")
+}
+
+model Payment {
+  id          Int         @id @default(autoincrement())
+  createdAt   DateTime    @default(now())
+  paymentType String
+  amount      String
+  processed   Boolean     @default(false)
+  ownerId     Int
+  application Application @relation(fields: [ownerId], references: [id])
+
+  @@map("payments")
+}
+
+model Application {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstName            String
+  middleName           String?
+  lastName             String
+  dob                  String
+  gender               String
+  country              String
+  tel                  String
+  email                String
+  nextOfKinFname       String
+  nextOfKinLname       String
+  relation             String
+  nextOfKinTel         String
+  nextOfKinEmail       String?
+  languages            String[]  @default([])
+  highestQualification String
+  institution          String
+  yearCompleted        String
+  proof                String
+  admissionType        String
+  admissionLevel       String
+  program              String
+  paymentMethod        String
+  approved             Boolean   @default(false)
+  approvedBy           Int?
+  user                 User?     @relation(fields: [approvedBy], references: [id])
+  payment              Payment[]
+
+  @@map("applications")
+}
