@@ -36,7 +36,7 @@ model Payment {
   amount      String
   processed   Boolean     @default(false)
   ownerId     Int
-  application Application @relation(fields: [ownerId], references: [id])
+  application Application @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@map("payments")
 }

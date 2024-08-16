@@ -1,9 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import {
-  ApproveApplicationDto,
-  CreateApplicationDto,
-  EditApplicationDto,
-} from './dto';
+import { CreateApplicationDto, EditApplicationDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -96,12 +92,20 @@ export class ApplicationService {
 
     if (!application) throw new ForbiddenException('Application not found');
 
+    const payment = await this.prisma.payment.findFirst({
+      where: {
+        ownerId: applicationId,
+      },
+    });
+
+    if (!payment)
+      throw new ForbiddenException(
+        'No payment found for current application cannot approve',
+      );
+
     const approveApplication = await this.prisma.application.update({
       where: {
         id: applicationId,
-        payment: {
-          some: {},
-        },
       },
       data: {
         approved: true,
@@ -111,6 +115,8 @@ export class ApplicationService {
 
     if (!approveApplication)
       throw new ForbiddenException('Application could not be approved');
+
+    return { message: 'Application Approved' };
   }
 
   async revokeApplicationApprovalById(applicationId: number) {
@@ -132,8 +138,9 @@ export class ApplicationService {
       },
     });
 
-    if (!revokeApplication)
-      throw new ForbiddenException('Revokation Failed!!');
+    if (!revokeApplication) throw new ForbiddenException('Revokation Failed!!');
+
+    return { message: 'Apllication revoked' };
   }
 
   async deleteApplicationById(applicationId: number) {

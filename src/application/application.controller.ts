@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ApplicationService } from './application.service';
 import {
-  ApproveApplicationDto,
   CreateApplicationDto,
   EditApplicationDto,
 } from './dto';
