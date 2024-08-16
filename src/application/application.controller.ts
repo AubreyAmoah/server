@@ -22,7 +22,9 @@ export class ApplicationController {
   constructor(private applicationService: ApplicationService) {}
 
   @Post('/create')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', {
+    limits: { fileSize: Math.pow(1024, 2) * 10}
+  }))
   createApplication(
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: CreateApplicationDto,
