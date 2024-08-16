@@ -7,23 +7,27 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApplicationService } from './application.service';
-import {
-  CreateApplicationDto,
-  EditApplicationDto,
-} from './dto';
+import { CreateApplicationDto, EditApplicationDto } from './dto';
 import { JwtGuard } from '../auth/guard';
 import { GetUser } from 'src/auth/decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('applications')
 export class ApplicationController {
   constructor(private applicationService: ApplicationService) {}
 
   @Post('/create')
-  createApplication(@Body() dto: CreateApplicationDto) {
-    return this.applicationService.createApplication(dto);
+  @UseInterceptors(FileInterceptor('file'))
+  createApplication(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: CreateApplicationDto,
+  ) {
+    return this.applicationService.createApplication(file ,dto);
   }
 
   @Get('/applicationbyid/:id')

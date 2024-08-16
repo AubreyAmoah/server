@@ -63,7 +63,7 @@ model Application {
   highestQualification String
   institution          String
   yearCompleted        String
-  proof                String
+  proof                String?
   admissionType        String
   admissionLevel       String
   program              String

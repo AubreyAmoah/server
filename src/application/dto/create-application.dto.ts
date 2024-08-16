@@ -71,10 +71,6 @@ export class CreateApplicationDto {
 
   @IsString()
   @IsNotEmpty()
-  proof: string;
-
-  @IsString()
-  @IsNotEmpty()
   admissionType: string;
 
   @IsString()

@@ -1,15 +1,24 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateApplicationDto, EditApplicationDto } from './dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApplicationService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private config: ConfigService,
+  ) {}
   getApplications() {
     return this.prisma.application.findMany({});
   }
 
-  async createApplication(dto: CreateApplicationDto) {
+  async createApplication(
+    file: Express.Multer.File,
+    dto: CreateApplicationDto,
+  ) {
+    if (!file) throw new ForbiddenException('Image Uplaod Failed');
+    const fileUrl = `${this.config.get('GLOBAL_URL')}/uploads/${file.filename}`;
     const newApplication = await this.prisma.application.create({
       data: {
         firstName: dto.firstName.toLowerCase(),
@@ -29,7 +38,7 @@ export class ApplicationService {
         highestQualification: dto.highestQualification.toLowerCase(),
         institution: dto.institution.toLowerCase(),
         yearCompleted: dto.yearCompleted,
-        proof: dto.proof,
+        proof: fileUrl,
         admissionType: dto.admissionType.toLowerCase(),
         admissionLevel: dto.admissionLevel.toLowerCase(),
         program: dto.program.toLowerCase(),
